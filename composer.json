@@ -1,0 +1,19 @@
+{
+    "name": "ijanki/seo-stats",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Daniele Cesarini",
+            "email": "daniele.cesarini@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ijanki\\SEOStats\\": "src/"
+        }
+    }
+}
