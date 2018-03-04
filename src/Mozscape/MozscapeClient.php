@@ -60,7 +60,8 @@ class MozscapeClient
      */
     public function getFreeStats($domains): array
     {
-        $cols = 1 + 4 + 32 + 2048 + 16384 + 32768 + 536870912 + 34359738368 + 68719476736 + 144115188075855872;
+        $cols = 1 + 4 + 32 + 128 + 512 + 1024 + 2048 + 16384 + 32768 + 536870912 + 34359738368 + 68719476736 + 144115188075855872;
+
         $metrics = $this->urlMetrics($domains, $cols);
 
         if (count($metrics) == 1) {
@@ -96,25 +97,36 @@ class MozscapeClient
      */
     private function urlMetrics($domains, $cols): array
     {
-        if (!is_array($domains)) {
-            $domains = [$domains];
-        }
-
         $this->updateSignature();
 
-        $response = $this->client->request(
-            'POST',
-            self::URL_METRICS,
-            [
-                'query' => [
-                    'Cols' => $cols,
-                    'AccessID' => $this->accessID,
-                    'Expires' => $this->expires,
-                    'Signature' => $this->signature,
-                ],
-                'body' => json_encode($domains),
-            ]
-        );
+        if (!is_array($domains)) {
+            $response = $this->client->request(
+                'GET',
+                self::URL_METRICS . $domains,
+                [
+                    'query' => [
+                        'Cols' => $cols,
+                        'AccessID' => $this->accessID,
+                        'Expires' => $this->expires,
+                        'Signature' => $this->signature,
+                    ],
+                ]
+            );
+        } else {
+            $response = $this->client->request(
+                'POST',
+                self::URL_METRICS,
+                [
+                    'query' => [
+                        'Cols' => $cols,
+                        'AccessID' => $this->accessID,
+                        'Expires' => $this->expires,
+                        'Signature' => $this->signature,
+                    ],
+                    'body' => json_encode($domains),
+                ]
+            );
+        }
 
         $result = json_decode((string)$response->getBody(), true);
 
